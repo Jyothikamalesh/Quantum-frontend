@@ -1,0 +1,19 @@
+.indicator {
+  visibility: hidden;
+}
+
+.typography {
+  font: normal normal normal 14px/17px Poppins;
+  text-transform: none;
+  color: #000000;
+}
+
+.typographySelected {
+  font: normal normal normal 14px/17px Poppins;
+  text-transform: none;
+  color: #ffffff;
+  // background: #eeeeee 0% 0% no-repeat padding-box;
+  background: #225fa7 0% 0% no-repeat padding-box;
+  border-radius: 32px;
+  padding: 8px 10px;
+}

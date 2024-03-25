@@ -1,0 +1,100 @@
+.simulationDetail {
+  &- {
+    &container {
+      padding: 24px 52px;
+    }
+
+    &header {
+      padding-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &headerText {
+      display: flex;
+      cursor: pointer;
+    }
+    &paper {
+      background: #ffffff 0% 0% no-repeat padding-box;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    &detailWrapper {
+      padding: 24px 24px 24px 24px;
+    }
+
+    &detailTitle {
+      font: normal normal bold 14px/17px Poppins;
+      padding-bottom: 12px;
+    }
+
+    &resultWrapper {
+      background: #eeeeee 0% 0% no-repeat padding-box;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px 10px 0px 0px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    &resultTitle {
+      font: normal normal bold 16px/20px Poppins;
+      padding-left: 24px;
+    }
+
+    &jobIdText {
+      font: normal normal bold 20px/24px Poppins;
+      color: #225fa7;
+    }
+
+    &codeWrapper {
+      white-space: pre-line;
+    }
+
+    &code {
+      padding: 6px;
+      font: normal normal normal 14px/17px Poppins;
+    }
+
+    &button {
+      text-transform: none;
+      height: 32px;
+      width: fit-content;
+      margin: 0px 4px;
+    }
+
+    &jobStatusChip {
+      &-- {
+        &completed {
+          background: #edf7ed 0% 0% no-repeat padding-box;
+          border-radius: 5px;
+          font: normal normal normal 14px/17px Poppins;
+          color: #1e4620;
+        }
+
+        &error {
+          background: #fdeded 0% 0% no-repeat padding-box;
+          border-radius: 5px;
+          font: normal normal normal 14px/17px Poppins;
+          color: #5f2120;
+        }
+
+        &pending {
+          background: #fff4e5 0% 0% no-repeat padding-box;
+          border-radius: 5px;
+          font: normal normal normal 14px/17px Poppins;
+          color: #663c00;
+        }
+
+        &in-progress {
+          background: #e5f6fd 0% 0% no-repeat padding-box;
+          border-radius: 5px;
+          font: normal normal normal 14px/17px Poppins;
+          color: #064764;
+        }
+      }
+    }
+  }
+}

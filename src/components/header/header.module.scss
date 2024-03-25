@@ -1,0 +1,23 @@
+.tabs {
+  height: 100%;
+
+  .indicator {
+    top: 0px;
+    background-color: #f1f113;
+  }
+
+  .flexContainer {
+    height: 100%;
+  }
+}
+
+.tab {
+  font: normal normal normal 14px/17px Poppins;
+  color: #ffffff;
+  padding: 0px 32px;
+  text-transform: none;
+}
+
+.selected {
+  color: #f1f113 !important;
+}

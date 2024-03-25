@@ -1,0 +1,42 @@
+.reportBug {
+  &- {
+    &container {
+      padding: 24px 52px;
+    }
+
+    &header {
+      padding-bottom: 24px;
+    }
+
+    &paper {
+      width: 100%;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px;
+    }
+  }
+
+  &-- {
+    &form {
+      &- {
+        &wrapper {
+          padding: 12px 0px;
+        }
+
+        &label {
+          display: flex;
+          align-items: center;
+        }
+
+        &labelText {
+          font: normal normal normal 16px/24px Poppins;
+          color: #000000;
+        }
+
+        &labelText:after {
+          content:" *";
+          color: red;
+        }
+      }
+    }
+  }
+}

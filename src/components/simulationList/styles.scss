@@ -1,0 +1,31 @@
+.simulationList {
+  &- {
+    &container {
+      padding: 24px 52px;
+    }
+
+    &header {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      padding-bottom: 24px;
+    }
+
+    &tableWrapper {
+      background: #ffffff 0% 0% no-repeat padding-box;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px;
+      display: flex;
+      align-content: flex-start;
+      height: 70vh;
+    }
+
+    &table {
+      &__ {
+        &idCell {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

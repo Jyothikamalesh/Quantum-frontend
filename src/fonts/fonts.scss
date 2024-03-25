@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
+
+@mixin font-poppins($size: false, $colour: false, $weight: false, $style: false, $lh: false) {
+  font-family: 'Poppins', sans-serif !important;
+  @if $size { font-size: $size !important; }
+  @if $colour { color: $colour !important; }
+  @if $weight { font-weight: $weight !important; }
+  @if $style {font-style:  $style !important;}
+  @if $lh { line-height: $lh !important; }
+}

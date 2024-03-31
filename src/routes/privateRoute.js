@@ -1,38 +1,36 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Profile from "../screens/profile";
-import ReportBug from "../screens/reportBug";
 import {
   SimulationAddEdit,
   SimulationDetail,
   SimulationList,
 } from "../screens/simulations";
 import { Error } from "../components/notFound";
+import { useAuth } from "./Context";
+import Admin from "../../src/screens/admin/admin";
 
 const PrivateRoute = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const { isValidTokenAvailable, isValueAvailable, getusertype } = useAuth();
 
   useEffect(() => {
-    if (
-      localStorage.access_token === undefined ||
-      localStorage.access_token === null
-    ) {
+    if (!isValidTokenAvailable()) {
       navigate("/login", { replace: false });
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [isValidTokenAvailable, navigate]);
 
   return (
     <>
-      {localStorage.access_token && (
+      {isValidTokenAvailable() && isValueAvailable() && (
         <Routes>
-          <Route path="*" element={<Error />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/simulation" element={<SimulationAddEdit />} />
           <Route path="/simulation/list" element={<SimulationList />} />
           <Route path="/simulation/:id" element={<SimulationDetail />} />
           <Route path="/simulation/:id/edit" element={<SimulationAddEdit />} />
-          <Route path="/report-bug" element={<ReportBug />} />
+          {getusertype() && <Route path="/admin" element={<Admin />} />}
+          <Route path="*" element={<Error />} />
         </Routes>
       )}
     </>

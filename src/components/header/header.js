@@ -19,18 +19,17 @@ import DrdoLogo from "../../assets/images/drdo_logo@2x.png";
 import { KeyboardArrowDownOutlined } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChangePasswordModal } from "../changePassword";
-
+import { useAuth } from "../../routes/Context"; // Import the useAuth hook; 
 const Header = () => {
+  const { logout, getusertype } = useAuth();
+
   let navigate = useNavigate();
   let location = useLocation();
-  const path = location.pathname.split("/");
   const [value, setValue] = useState(() => {
     console.log(location.pathname);
     switch (location.pathname) {
       case "/simulation":
         return "1";
-      case "/report-bug":
-        return "2";
       case "/simulation/list":
         return "3";
       case "/admin":
@@ -131,24 +130,20 @@ const Header = () => {
               onClick={() => navigate("/simulation/list", { replace: false })}
             />
 
-            <Tab
-              label="Report Bug"
-              value="2"
-              className={styles.tab}
-              classes={{
-                selected: styles.selected,
-              }}
-              onClick={() => navigate("/report-bug", { replace: false })}
-            />
-            <Tab
-              label="Admin"
-              value="4"
-              className={styles.tab}
-              classes={{
-                selected: styles.selected,
-              }}
-              onClick={() => navigate("/admin", { replace: false })}
-            />
+            {getusertype() !== null && getusertype() && (
+              <Tab
+                label="Admin"
+                value="4"
+                className={styles.tab}
+                classes={{
+                  selected: styles.selected,
+                }}
+                onClick={() => navigate("/admin", { replace: false })}
+              />
+            )}
+
+
+
           </Tabs>
         </Grid>
 
@@ -220,9 +215,7 @@ const Header = () => {
           <MenuItem onClick={handleModalOpen}>Change Password</MenuItem>
           <MenuItem
             onClick={() => {
-              localStorage.setItem("access_token", null);
-              localStorage.setItem("refresh_token", null);
-              navigate("/login", { replace: false });
+              logout();
             }}
           >
             Logout

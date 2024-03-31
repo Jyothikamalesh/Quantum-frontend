@@ -2,10 +2,8 @@ import {
   Box,
   Grid,
   Paper,
-  Alert,
   Divider,
   Typography,
-  AlertTitle,
   IconButton,
   InputAdornment,
   Button,
@@ -19,33 +17,25 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import CollegeLogo from "../../assets/images/college_logo@2x.png";
 import DrdoLogo from "../../assets/images/drdo_logo@2x.png";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import { useAuth } from "../../routes/Context";
 const LoginForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showLoginError, setShowLoginError] = useState(false);
-  const [showLoginMessage, setShowLoginMessage] = useState("");
+  const { login  } = useAuth(); 
   const [open, setOpen] = useState(false);
-  const [formValues, setFormValues] = useState({
-    email: {
-      value: "",
-      error: false,
-      errorMessage: "Email is required!!",
-    },
-    password: {
-      value: "",
-      error: false,
-      errorMessage: "Password is required!!",
-    },
-  });
   const [registerData, setRegisterData] = useState({
     email: "",
     password: "",
+    name: ""
   });
   const [registerResponse, setRegisterResponse] = useState("");
+  const [loginFormValues, setLoginFormValues] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleOpen = () => {
     setOpen(true);
@@ -55,15 +45,6 @@ const LoginForm = () => {
     setOpen(false);
   };
 
-  let navigate = useNavigate();
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
   const handleChangeregister = (e) => {
     const { name, value } = e.target;
     setRegisterData({
@@ -72,73 +53,6 @@ const LoginForm = () => {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const error = false;
-    setFormValues({
-      ...formValues,
-      [name]: {
-        ...formValues[name],
-        value,
-        error,
-      },
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let errorFlag = false;
-
-    const formFields = Object.keys(formValues);
-    let newFormValues = { ...formValues };
-
-    for (let index = 0; index < formFields.length; index++) {
-      const currentField = formFields[index];
-      const currentValue = formValues[currentField].value;
-
-      if (currentValue === "") {
-        newFormValues = {
-          ...newFormValues,
-          [currentField]: {
-            ...newFormValues[currentField],
-            error: true,
-          },
-        };
-        errorFlag = true;
-      }
-    }
-    setFormValues(newFormValues);
-
-    if (!errorFlag) {
-      handleLoginClick();
-    }
-  };
-
-  const handleLoginClick = async () => {
-    await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formValues.email.value,
-        password: formValues.password.value,
-      }),
-    })
-      .then((result) => {
-        return result.json();
-      })
-      .then((res) => {
-        if (res.error) {
-          setShowLoginError(true);
-          setShowLoginMessage(res.data.message);
-        } else {
-          localStorage.setItem("access_token", res.data.access_token);
-          localStorage.setItem("refresh_token", res.data.refresh_token);
-          navigate("/simulation", { replace: false });
-        }
-      });
-  };
 
   const handleSubmitregister = async () => {
     await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
@@ -162,37 +76,77 @@ const LoginForm = () => {
       .then((data) => {
         console.log(data)
         // Handle successful response
-        setRegisterResponse(data);
+        setRegisterResponse("Register Success");
         // Clear form fields if needed
         setRegisterData({
           email: "",
           password: "",
+          name: ""
         });
       })
       .catch((error) => {
         // Handle error responses
-        console.log(error);
+        console.log(error + "---");
         setRegisterResponse(error.message);
       });
   };
+  let navigate = useNavigate();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
 
+  const handleClickShowPassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
-  useEffect(() => {
-    if (showLoginError) {
-      setTimeout(() => {
-        setShowLoginError(false);
-      }, 3000);
+  const handleMouseDownPassword = (e) => {
+    e.preventDefault();
+  };
+
+  const handleLoginClick = async () => {
+    if (!loginFormValues.email || !loginFormValues.password) {
+      setErrorMessage("Please enter both email and password");
+      return;
     }
-  }, [showLoginError]);
+    try {
+      const formData = new FormData();
+      formData.append('username', loginFormValues.email);
+      formData.append('password', loginFormValues.password);
+
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setErrorMessage("");
+      setSuccessMessage(response.data.message);
+
+      const access_token = response.data.access_token;
+
+      console.log(access_token);
+       login(access_token);
+      // Redirect to /simulation after 2 seconds if login successful
+      setTimeout(() => {
+        navigate("/simulation");
+      }, 2000);
+    } catch (error) {
+      console.log(error)
+      setSuccessMessage("");
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("An error occurred during login. Please try again later.");
+      }
+    }
+  };
 
   return (
     <Paper className="login-wrapper">
-      {showLoginError && (
-        <Alert severity="error">
-          <AlertTitle>Error</AlertTitle>
-          {showLoginMessage}
-        </Alert>
-      )}
       <Grid container className="login--form">
         <Grid container item>
           <Grid item xs={9}>
@@ -246,30 +200,22 @@ const LoginForm = () => {
 
         <Grid container item>
           <Box sx={{ width: "100%", height: "100%" }}>
-            <form noValidate onSubmit={handleSubmit}>
-              <Grid item sx={{ padding: "12px 10px" }}>
-                <Typography className="login--form-inputLabel">
-                  Email
-                </Typography>
+            <form >
+              <Grid item xs={12} sx={{ padding: "12px 10px" }}>
+                <Typography className="login--form-inputLabel">Email</Typography>
                 <TextField
                   name="email"
                   required
-                  sx={{ width: "100%" }}
-                  value={formValues.email.value}
+                  fullWidth
+                  value={loginFormValues.email}
                   onChange={handleChange}
-                  error={formValues.email.error}
-                  helperText={
-                    formValues.email.error && formValues.email.errorMessage
-                  }
                 />
               </Grid>
-              <Grid item sx={{ padding: "12px 10px" }}>
-                <Typography className="login--form-inputLabel">
-                  Password
-                </Typography>
+              <Grid item xs={12} sx={{ padding: "12px 10px" }}>
+                <Typography className="login--form-inputLabel">Password</Typography>
                 <TextField
                   name="password"
-                  sx={{ width: "100%" }}
+                  fullWidth
                   required
                   type={showPassword ? "text" : "password"}
                   InputProps={{
@@ -286,29 +232,31 @@ const LoginForm = () => {
                       </InputAdornment>
                     ),
                   }}
-                  value={formValues.password.value}
+                  value={loginFormValues.password}
                   onChange={handleChange}
-                  error={formValues.password.error}
-                  helperText={
-                    formValues.password.error &&
-                    formValues.password.errorMessage
-                  }
+                  error={!!errorMessage}
+                  helperText={errorMessage}
                 />
               </Grid>
-
               <Grid item sx={{ padding: "20px 10px", width: "100%" }}>
                 <Button
                   sx={{
                     width: "100%", height: "48px", color: "blue", "&:hover": {
                       color: "white",
-                    }
+                    },
                   }}
                   variant="contained"
-                  type="submit"
+                  onClick={handleLoginClick}
                 >
                   Login
                 </Button>
               </Grid>
+              {successMessage && (
+                <Grid item xs={12} sx={{ padding: "12px 10px" }}>
+                  <Typography>{successMessage}</Typography>
+                </Grid>
+              )}
+
               <div>
                 <Grid item sx={{ padding: "20px 10px", width: "100%" }}>
                   <Button
@@ -339,6 +287,16 @@ const LoginForm = () => {
                     />
                     <TextField
                       margin="dense"
+                      id="name"
+                      name="name"
+                      label="Name"
+                      type="name"
+                      fullWidth
+                      value={registerData.name}
+                      onChange={handleChangeregister}
+                    />
+                    <TextField
+                      margin="dense"
                       id="password"
                       name="password"
                       label="Password"
@@ -347,17 +305,18 @@ const LoginForm = () => {
                       value={registerData.password}
                       onChange={handleChangeregister}
                     />
+                    {registerResponse && ( 
+                      <Typography variant="body1" sx={{ marginTop: '16px', color: 'red' }}>
+                        {registerResponse}
+                      </Typography>
+                    )}
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose}>Close</Button>
                     <Button onClick={handleSubmitregister}>Submit</Button>
                   </DialogActions>
                 </Dialog>
-                {registerResponse && (
-                  <Box mt={2}>
-                    <Typography variant="body1">{registerResponse}</Typography>
-                  </Box>
-                )}
+
               </div>
             </form>
           </Box>
